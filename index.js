@@ -23,7 +23,12 @@ var cases_cache = [];
 function refresh_data () {
     client.get(url, function(data, res){
         var cases = data.data;
+        var sum_confirmed = 0, sum_death = 0, sum_recovered = 0;
         for(var i=0; i<cases.length; i++){
+            sum_confirmed += cases[i].confirmed;
+            sum_death += cases[i].dead;
+            sum_recovered += cases[i].recovered;
+
             var total = cases[i].dead + cases[i].recovered;
             cases[i].total_closed_cases = total;
             if(total == 0) {
@@ -34,6 +39,20 @@ function refresh_data () {
                 cases[i].recovery_rate = (cases[i].recovered *100)/total;
             }
         }
+        cases.push({
+            
+                location: 'TOTAL',
+                latitude: 0,
+                longitude: 0,
+                confirmed: sum_confirmed,
+                dead: sum_death,
+                recovered: sum_recovered,
+                updated: 'N/A',
+                total_closed_cases: sum_death + sum_recovered,
+                death_rate: sum_death*100 / (sum_death + sum_recovered),
+                recovery_rate: sum_recovered*100 / (sum_death + sum_recovered)
+              
+        });
         cases_cache = cases;
         build_table();
     });
