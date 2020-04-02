@@ -57,13 +57,23 @@ function refresh_data () {
         build_table();
     });
 }
+function color(i){
+    if (i%4==0)
+        return "PINK";
+    if (i%4==1)
+        return "YELLOW";
+    if (i%4==2)
+        return "MAGENTA";
+    if (i%4==3)
+        return "CYAN";
+}
 var html_table = "";
 function build_table() {
     html_table = "<table border='1'>";
     html_table += "<tr><td>Country</td><td>Confirmed</td><td>Death</td><td>Recovered</td><td>Total Closed Cases</td><td>Death Rate % (Death/Total Closed Cases)</td><td>Recovery Rate % (Recover/Total Closed Cases)</td></tr>";
     for (var i=0; i<cases_cache.length; i++){
         console.log(cases_cache[i]);
-        html_table += "<tr>";
+        html_table += "<tr bgcolor=' " + color(i) + "'>";
         html_table += "<td>" + cases_cache[i].location + "</td>";
         html_table += "<td>" + cases_cache[i].confirmed + "</td>";
         html_table += "<td>" + cases_cache[i].dead + "</td>";
