@@ -33,7 +33,7 @@ var html_tbl = {
 function refresh_data () {
     client.get(url, function(data, res){
         var cases = data.data;
-        var sum_confirmed = 0, sum_death = 0, sum_recovered = 0;
+        var sum_confirmed = 0, sum_death = 0, sum_recovered = 0, predicted_death = 0;
         for(var i=0; i<cases.length; i++){
             sum_confirmed += cases[i].confirmed;
             sum_death += cases[i].dead;
@@ -48,9 +48,11 @@ function refresh_data () {
                 cases[i].death_rate = (cases[i].dead *100)/total;
                 cases[i].recovery_rate = (cases[i].recovered *100)/total;
             }
+
+            cases[i].death_prediction = (cases[i].death_rate * cases[i].confirmed)/100;
+            predicted_death += cases[i].death_prediction;
         }
         cases.push({
-            
                 location: 'TOTAL',
                 latitude: 0,
                 longitude: 0,
@@ -60,8 +62,8 @@ function refresh_data () {
                 updated: 'N/A',
                 total_closed_cases: sum_death + sum_recovered,
                 death_rate: sum_death*100 / (sum_death + sum_recovered),
-                recovery_rate: sum_recovered*100 / (sum_death + sum_recovered)
-              
+                recovery_rate: sum_recovered*100 / (sum_death + sum_recovered),
+                death_prediction: predicted_death
         });
         console.log(cases.length);
         cases.sort(function(a, b){
@@ -106,22 +108,28 @@ function refresh_data () {
         });
 
         html_tbl.recovery_rate = build_table(cases);
+
+        cases.sort(function(a, b){
+            return b.death_prediction - a.death_prediction;
+        });
+
+        html_tbl.death_prediction = build_table(cases);
     });
 }
 function color(i){
     if (i%4==0)
-        return "PINK";
+        return "87A09B";
     if (i%4==1)
-        return "YELLOW";
+        return "75B687";
     if (i%4==2)
-        return "MAGENTA";
+        return "7975B6";
     if (i%4==3)
-        return "CYAN";
+        return "B175B6";
 }
 var html_table = "";
 function build_table(cases_cache) {
     html_table = "<table border='1'>";
-    html_table += "<tr><td><a href='/?format=Location'>Country</td><td><a href='/?format=Confirmed'>Confirmed</td><td><a href='/?format=Death'>Death</td><td><a href='/?format=Recovered'>Recovered</td><td><a href='/?format=total_closed_cases'>Total Closed Cases</td><td><a href='/?format=death_rate'>Death Rate % (Death/Total Closed Cases)</td><td><a href='/?format=recovery_rate'>Recovery Rate % (Recover/Total Closed Cases)</td></tr>";
+    html_table += "<tr><td><a href='/?format=Location'>Country</td><td><a href='/?format=Confirmed'>Confirmed</td><td><a href='/?format=Death'>Death</td><td><a href='/?format=Recovered'>Recovered</td><td><a href='/?format=total_closed_cases'>Total Closed Cases</td><td><a href='/?format=death_rate'>Death Rate % (Death/Total Closed Cases)</td><td><a href='/?format=recovery_rate'>Recovery Rate % (Recover/Total Closed Cases)</td><td><a href='/?format=death_prediction'>Predicted Death</a></td></tr>";
     for (var i=0; i<cases_cache.length; i++){
         
         
@@ -136,6 +144,7 @@ function build_table(cases_cache) {
         html_table += "<td>" + cases_cache[i].total_closed_cases + "</td>";
         html_table += "<td>" + cases_cache[i].death_rate.toFixed(2) + "</td>";
         html_table += "<td>" + cases_cache[i].recovery_rate.toFixed(2) + "</td>";
+        html_table += "<td>" + cases_cache[i].death_prediction.toFixed(0) + "</td>";
         html_table += "</tr>";
         
     }
@@ -170,7 +179,9 @@ app.all("/*", function(req, res){
         res.send(html_tbl.death_rate);
     } else if(req.query.format == "recovery_rate") {
         res.send(html_tbl.recovery_rate);
-    } else {
+    } else if(req.query.format == "death_prediction") {
+        res.send(html_tbl.death_prediction);
+    }else {
         res.send(html_tbl.Location);
     }
 });
