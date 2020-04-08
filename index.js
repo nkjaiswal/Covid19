@@ -128,7 +128,7 @@ function color(i){
 }
 var html_table = "";
 function build_table(cases_cache) {
-    html_table = "<table border='1'>";
+    html_table = "<a href='/?format=json'>JSON</a> <a href='https://github.com/nkjaiswal/Covid19' target='_blank'>Source Code</a><hr><table border='1'>";
     html_table += "<tr><td><a href='/?format=Location'>Country</td><td><a href='/?format=Confirmed'>Confirmed</td><td><a href='/?format=Death'>Death</td><td><a href='/?format=Recovered'>Recovered</td><td><a href='/?format=total_closed_cases'>Total Closed Cases</td><td><a href='/?format=death_rate'>Death Rate % (Death/Total Closed Cases)</td><td><a href='/?format=recovery_rate'>Recovery Rate % (Recover/Total Closed Cases)</td><td><a href='/?format=death_prediction'>Predicted Death</a></td></tr>";
     for (var i=0; i<cases_cache.length; i++){
         
