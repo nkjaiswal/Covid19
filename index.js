@@ -18,7 +18,7 @@ var server = app.listen(port, function(){
 var Client = require('node-rest-client').Client;
  
 var client = new Client();
-var url = "https://www.trackcorona.live/api/countries/";
+var url = "https://www.trackcorona.live/api/countries";
 var cases_cache = [];
 
 var html_tbl = {
